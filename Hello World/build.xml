@@ -1,0 +1,81 @@
+<project name="HelloWorld" default="build" basedir=".">
+
+	<description>
+			HellowWorld
+		</description>
+	 <loadproperties srcFile="build.properties"/>
+	<property name="dist.dir" location="dist" />
+	<property name="build.dir" location="build" />
+	<property name="src.dir" location="src" />
+	<property name="lib.dir" location="libs" />
+	<property name="dist.lib.dir" location="${dist.dir}/lib" />
+
+	<condition property="isJar">
+		<equals arg1="${BUILD.TYPE}" arg2="jar" casesensitive="no" />
+	</condition>
+	<condition property="isWar">
+		<equals arg1="${BUILD.TYPE}" arg2="war" casesensitive="no" />
+	</condition>
+	<condition property="isEar">
+		<equals arg1="${BUILD.TYPE}" arg2="ear" casesensitive="no" />
+	</condition>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.lib.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="prepare" depends="clean">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.lib.dir}" />
+	</target>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<target name="copyResouce" depends="prepare">
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}" includes="*.xml" />
+		</copy>
+
+	</target>
+
+	<target name="compile" depends="copyResouce">
+		<javac debug="true"
+					  debuglevel="lines,vars,source" destdir="${build.dir}" classpathref="classpath" >
+			<src path="${src.dir}" />
+		</javac>
+	</target>
+
+	<target name="distWar" depends="compile" if="isWar" >
+		<war destfile="${dist.lib.dir}/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent"/>
+			<lib dir="WebContent/WEB-INF/lib"/>
+			<classes dir="${build.dir}"/>
+		</war>
+	</target>
+
+	<target name="distJar" depends="compile" if="isJar">
+		<jar destfile="${dist.lib.dir}/${ant.project.name}.jar" >
+			<fileset dir="${build.dir}" />
+		</jar>
+	</target>
+
+	<target name="distEar" depends="compile" if="isEar">
+		<war destfile="${dist.lib.dir}/${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent"/>
+			<lib dir="WebContent/WEB-INF/lib"/>
+			<classes dir="${build.dir}"/>
+		</war>
+		<ear destfile="${dist.lib.dir}/${ant.project.name}.ear" appxml="WebContent/WEB-INF/application.xml">
+			<fileset dir="${dist.lib.dir}" includes="*.*" />
+		</ear>
+	</target>
+
+	<target name="build" depends="distJar,distWar,distEar"/>
+
+
+</project>
