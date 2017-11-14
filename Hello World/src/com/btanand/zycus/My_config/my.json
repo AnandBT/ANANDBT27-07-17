@@ -1,0 +1,7 @@
+{
+    "reporterEnabled": "spec, xunit",
+    "xunitReporterOptions": {
+        "id": "xunit",
+        "output": "./TestResults/TEST-xunit.xml"
+    }
+}
