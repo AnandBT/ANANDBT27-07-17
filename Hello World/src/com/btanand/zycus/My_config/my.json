@@ -5,3 +5,5 @@
         "output": "./TestResults/TEST-xunit.xml"
     }
 }
+
+trigger my build
